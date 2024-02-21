@@ -23,6 +23,7 @@ import RssFeed from "./pages/rag/workspace/rss-feed";
 import WorkspacePane from "./pages/rag/workspace/workspace";
 import Workspaces from "./pages/rag/workspaces/workspaces";
 import Welcome from "./pages/welcome";
+import Eciso from "./pages/plugins/eciso/eciso";
 import "./styles/app.scss";
 
 function App() {
@@ -60,6 +61,10 @@ function App() {
                 element={<RssFeed />}
               />
               <Route path="workspaces/add-data" element={<AddData />} />
+            </Route>
+            <Route path="/plugins" element={<Outlet />}>
+              <Route path="eciso" element={<Eciso/>} />
+              <Route path="eciso/:sessionId" element={<Eciso />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

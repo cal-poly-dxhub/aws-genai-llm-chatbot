@@ -61,6 +61,8 @@ const embeddingModels = [
       options.privateWebsite = config.privateWebsite;
       options.certificate = config.certificate;
       options.domain = config.domain;
+      options.customPlugins = config.customPlugins;
+      options.ecisoPlugin = config.ecisoPlugin;
       options.bedrockEnable = config.bedrock?.enabled;
       options.bedrockRegion = config.bedrock?.region;
       options.bedrockRoleArn = config.bedrock?.roleArn;
@@ -168,6 +170,22 @@ async function processCreateOptions(options: any): Promise<void> {
         return v.length === 0 || valid;
       },
       initial: options.bedrockRoleArn || "",
+    },
+    {
+      type: "confirm",
+      name: "customPlugins",
+      message: "Do you want to enable additional custom plugins? ",
+      initial: options.customPlugins || false,
+    },
+    {
+      type: "confirm",
+      name: "ecisoPlugin",
+      message:
+        "Do you want to enable the eCISO plugin?",
+      initial: options.ecisoPlugin || false,
+      skip(): boolean {
+        return !(this as any).state.answers.customPlugins;
+      },
     },
     {
       type: "confirm",
@@ -348,6 +366,8 @@ async function processCreateOptions(options: any): Promise<void> {
             answers.bedrockRoleArn === "" ? undefined : answers.bedrockRoleArn,
         }
       : undefined,
+    customPlugins: answers.customPlugins,
+    ecisoPlugin: answers.ecisoPlugin,
     llms: {
       sagemaker: answers.sagemakerModels,
     },

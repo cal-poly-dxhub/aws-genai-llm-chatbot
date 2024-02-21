@@ -38,6 +38,22 @@ export default function NavigationPanel() {
         ],
       },
     ];
+    console.log("NAV <rag_enabled>: ",appContext?.config.rag_enabled)
+    console.log("NAV <eciso_enabed>: ",appContext?.config.custom_plugins)
+    console.log("NAV <eciso_enabed>: ",appContext?.config.eciso_enabled)
+    if (appContext?.config.custom_plugins) {
+
+      items.push(
+        { type: "divider" },
+        {
+          type: "section",
+          text: "Custom Plugins",
+          items: appContext?.config.eciso_enabled ? 
+            [ { type: "link", text: "eCISO", href: "/plugins/eciso" },]: []
+        },
+      
+      );      
+    }
 
     if (appContext?.config.rag_enabled) {
       const crossEncodersItems: SideNavigationProps.Item[] = appContext?.config

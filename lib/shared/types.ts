@@ -76,6 +76,8 @@ export interface SystemConfig {
   certificate?: string;
   domain?: string;
   privateWebsite?: boolean;
+  customPlugins?: boolean;
+  ecisoPlugin?: boolean;
   bedrock?: {
     enabled?: boolean;
     region?: SupportedRegion;

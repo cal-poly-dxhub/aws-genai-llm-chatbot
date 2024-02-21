@@ -14,6 +14,8 @@ export interface AppConfig {
           custom: false;
           name: CognitoHostedUIIdentityProvider;
         };
+    custom_plugins: boolean;
+    eciso_enabled: boolean;
     rag_enabled: boolean;
     cross_encoders_enabled: boolean;
     sagemaker_embeddings_enabled: boolean;
@@ -37,7 +39,7 @@ export interface NavigationPanelState {
 }
 
 export type LoadingStatus = "pending" | "loading" | "finished" | "error";
-export type ModelProvider = "sagemaker" | "bedrock" | "openai";
+export type ModelProvider = "sagemaker" | "bedrock" | "openai | eciso";
 export type RagDocumentType =
   | "file"
   | "text"

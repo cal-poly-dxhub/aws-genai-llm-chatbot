@@ -1,10 +1,11 @@
 import { API } from "aws-amplify";
 import { GraphQLQuery, GraphQLResult } from "@aws-amplify/api";
-import { listSessions, getSession } from "../../graphql/queries";
+import { listSessions, getSession, getEcisoSession } from "../../graphql/queries";
 import { deleteSession, deleteUserSessions } from "../../graphql/mutations";
 import {
   ListSessionsQuery,
   GetSessionQuery,
+  GetEcisoSessionQuery,
   DeleteSessionMutation,
   DeleteUserSessionsMutation,
 } from "../../API";
@@ -22,6 +23,17 @@ export class SessionsClient {
   ): Promise<GraphQLResult<GraphQLQuery<GetSessionQuery>>> {
     const result = await API.graphql<GraphQLQuery<GetSessionQuery>>({
       query: getSession,
+      variables: {
+        id: sessionId,
+      },
+    });
+    return result;
+  }
+  async GetEcisoSessionQuery(
+    sessionId: string
+  ): Promise<GraphQLResult<GraphQLQuery<GetEcisoSessionQuery>>> {
+    const result = await API.graphql<GraphQLQuery<GetEcisoSessionQuery>>({
+      query: getEcisoSession,
       variables: {
         id: sessionId,
       },
