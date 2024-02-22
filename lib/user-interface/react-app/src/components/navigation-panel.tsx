@@ -49,7 +49,10 @@ export default function NavigationPanel() {
           type: "section",
           text: "Custom Plugins",
           items: appContext?.config.eciso_enabled ? 
-            [ { type: "link", text: "eCISO", href: "/plugins/eciso" },]: []
+            [ 
+              { type: "link", text: "eCISO Home", href: "/plugins/eciso-home" },
+              { type: "link", text: "eCISO", href: "/plugins/eciso" },
+            ]: []
         },
       
       );      

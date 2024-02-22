@@ -24,6 +24,7 @@ import WorkspacePane from "./pages/rag/workspace/workspace";
 import Workspaces from "./pages/rag/workspaces/workspaces";
 import Welcome from "./pages/welcome";
 import Eciso from "./pages/plugins/eciso/eciso";
+import EcisoWelcome from "./pages/plugins/eciso/eciso-welcome";
 import "./styles/app.scss";
 
 function App() {
@@ -63,6 +64,7 @@ function App() {
               <Route path="workspaces/add-data" element={<AddData />} />
             </Route>
             <Route path="/plugins" element={<Outlet />}>
+              <Route path="eciso-home" element={<EcisoWelcome/>} />
               <Route path="eciso" element={<Eciso/>} />
               <Route path="eciso/:sessionId" element={<Eciso />} />
             </Route>
