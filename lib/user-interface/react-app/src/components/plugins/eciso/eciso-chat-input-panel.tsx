@@ -252,6 +252,9 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
           ? getSelectedWorkspaceOption(workspaces)
           : workspaceDefaultOptions[0];
 
+        // null msg initiate?
+        handleSendMessage();
+
         setState((state) => ({
           ...state,
           models,

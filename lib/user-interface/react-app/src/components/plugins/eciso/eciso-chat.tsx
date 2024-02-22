@@ -133,6 +133,8 @@ export default function EcisoChat(props: { sessionId?: string }) {
         )}
       </div>
       <div className={styles.input_container}>
+
+
         <EcisoChatInputPanel
           session={session}
           running={running}
