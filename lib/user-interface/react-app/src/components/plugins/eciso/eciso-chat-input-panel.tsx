@@ -160,6 +160,10 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
     const sub = subscribe();
     sub
       .then(() => {
+        ////////////////////////////////////
+        //null message
+        handleSendMessage();
+        ////////////////////////////////////
         setReadyState(ReadyState.OPEN);
         console.log(`Subscribed to session ${props.session.id}`);
         const request: ChatBotHeartbeatRequest = {
@@ -242,7 +246,10 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
       ] as Model[];
 
       const models = modelsResult.data ? eciso_override : [];
-
+        ////////////////////////////////////
+        //null message
+        handleSendMessage();
+        ////////////////////////////////////
         const selectedModelOption = getSelectedModelOption(models);
         const selectedModelMetadata = getSelectedModelMetadata(
           models,
@@ -252,8 +259,6 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
           ? getSelectedWorkspaceOption(workspaces)
           : workspaceDefaultOptions[0];
 
-        // null msg initiate?
-        handleSendMessage();
 
         setState((state) => ({
           ...state,
@@ -436,6 +441,7 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
     ...workspaceDefaultOptions,
     ...OptionsHelper.getSelectOptions(state.workspaces || []),
   ];
+
 
   return (
     <SpaceBetween direction="vertical" size="l">
