@@ -353,6 +353,11 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
     const { name, provider } = OptionsHelper.parseValue(
       state.selectedModel.value
     );
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    console.log("PROVIDER PROVIDER PROVIDER")
+    console.log(provider)
+    console.log("PROVIDER PROVIDER PROVIDER")
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
     const value = state.value.trim();
     const request: ChatBotRunRequest = {
@@ -415,6 +420,86 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
       },
     });
   };
+  const handlePdfMessage = () => {
+    if (!state.selectedModel) return;
+    if (props.running) return;
+    if (readyState !== ReadyState.OPEN) return;
+    EcisoChatScrollState.userHasScrolled = false;
+
+    const { name, provider } = OptionsHelper.parseValue(
+      state.selectedModel.value
+    );
+    //we are overriding this
+    console.log("Overriding: ", provider);
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    console.log("PROVIDER PROVIDER PROVIDER")
+    console.log(provider)
+    console.log("PROVIDER PROVIDER PROVIDER")
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+
+    
+    const value = state.value.trim();
+    const request: ChatBotRunRequest = {
+      action: ChatBotAction.Run,
+      modelInterface: state.selectedModelMetadata!.interface as ModelInterface,
+      data: {
+        mode: ChatBotMode.Chain,
+        text: "",
+        files: props.configuration.files || [],
+        modelName: name,
+        provider: "ecisopdf",
+        sessionId: props.session.id,
+        workspaceId: state.selectedWorkspace?.value,
+        modelKwargs: {
+          streaming: props.configuration.streaming,
+          maxTokens: props.configuration.maxTokens,
+          temperature: props.configuration.temperature,
+          topP: props.configuration.topP,
+        },
+      },
+    };
+
+    setState((state) => ({
+      ...state,
+      value: "",
+    }));
+    setFiles([]);
+
+    props.setConfiguration({
+      ...props.configuration,
+      files: [],
+    });
+
+    props.setRunning(true);
+    messageHistoryRef.current = [
+      ...messageHistoryRef.current,
+
+      {
+        type: ChatBotMessageType.Human,
+        content: value,
+        metadata: {
+          ...props.configuration,
+        },
+        tokens: [],
+      },
+      {
+        type: ChatBotMessageType.AI,
+        tokens: [],
+        content: "",
+        metadata: {},
+      },
+    ];
+
+    props.setMessageHistory(messageHistoryRef.current);
+
+    API.graphql({
+      query: sendQuery,
+      variables: {
+        data: JSON.stringify(request),
+      },
+    });
+  };
+
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: "Connecting",
@@ -528,6 +613,25 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
                   }}
                 />
               ))}
+              <Button
+              disabled={
+                readyState !== ReadyState.OPEN ||
+                !state.models?.length ||
+                !state.selectedModel ||
+                props.running ||
+                props.session.loading
+              }
+              onClick={handlePdfMessage}
+              variant="primary"
+            >
+              {props.running ? (
+                <>
+                  Generate Report&nbsp;&nbsp;
+                </>
+              ) : (
+                "Generate Report"
+              )}
+            </Button>
             <Button
               disabled={
                 readyState !== ReadyState.OPEN ||

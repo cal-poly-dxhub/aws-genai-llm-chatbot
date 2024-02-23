@@ -135,17 +135,22 @@ def handle_run(record):
     )
 
     
-    #logger.info("~~~~~~~~~~~~~~~~~~~~~~~~")
-    #logger.info(response["content"])
-    #logger.info("------------------------")
-    override = extract_response(response["content"])
-    #logger.info(override)
-    #logger.info("~~~~~~~~~~~~~~~~~~~~~~~~")
+    # eCiso override to strip xml tags
+    if( provider == 'eciso'):
+        #logger.info("~~~~~~~~~~~~~~~~~~~~~~~~")
+        #logger.info(response["content"])
+        #logger.info("------------------------")
+        override = extract_response(response["content"])
+        #logger.info(override)
+        #logger.info("~~~~~~~~~~~~~~~~~~~~~~~~")
+        
+        response["content"]=override
+        #logger.info(response)
     
-    # eCiso override
-    
-    response["content"]=override
-    #logger.info(response)
+    if( provider == 'ecisopdf'):
+        #generate pdf and update last statement of response with presigned url
+        response["content"] += "\n\nDownload report here: <presigned link>"
+        pass
     
 
     send_to_client(
