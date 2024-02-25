@@ -16,6 +16,7 @@ export interface AppConfig {
         };
     custom_plugins: boolean;
     eciso_enabled: boolean;
+    eciso_focus_enabled: boolean;
     rag_enabled: boolean;
     cross_encoders_enabled: boolean;
     sagemaker_embeddings_enabled: boolean;

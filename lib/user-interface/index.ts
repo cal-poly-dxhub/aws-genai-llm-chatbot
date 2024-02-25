@@ -101,6 +101,7 @@ export class UserInterface extends Construct {
         ),
         custom_plugins: props.config.customPlugins,
         eciso_enabled: props.config.ecisoPlugin,
+        eciso_focus_enabled: props.config.ecisoPluginFocus,
         privateWebsite: props.config.privateWebsite ? true : false,
 
       },

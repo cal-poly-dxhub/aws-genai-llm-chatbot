@@ -63,6 +63,7 @@ const embeddingModels = [
       options.domain = config.domain;
       options.customPlugins = config.customPlugins;
       options.ecisoPlugin = config.ecisoPlugin;
+      options.ecisoPluginFocus = config.ecisoPluginFocus;
       options.bedrockEnable = config.bedrock?.enabled;
       options.bedrockRegion = config.bedrock?.region;
       options.bedrockRoleArn = config.bedrock?.roleArn;
@@ -185,6 +186,16 @@ async function processCreateOptions(options: any): Promise<void> {
       initial: options.ecisoPlugin || false,
       skip(): boolean {
         return !(this as any).state.answers.customPlugins;
+      },
+    },
+    {
+      type: "confirm",
+      name: "ecisoPluginFocus",
+      message:
+        "Do you want to enable the focus mode for eCISO plugin?",
+      initial: options.ecisoPluginFocus || false,
+      skip(): boolean {
+        return (!(this as any).state.answers.customPlugins || !(this as any).state.answers.ecisoPlugin);
       },
     },
     {
@@ -368,6 +379,7 @@ async function processCreateOptions(options: any): Promise<void> {
       : undefined,
     customPlugins: answers.customPlugins,
     ecisoPlugin: answers.ecisoPlugin,
+    ecisoPluginFocus: answers.ecisoPluginFocus,
     llms: {
       sagemaker: answers.sagemakerModels,
     },

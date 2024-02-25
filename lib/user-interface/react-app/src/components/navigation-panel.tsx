@@ -6,14 +6,16 @@ import useOnFollow from "../common/hooks/use-on-follow";
 import { useNavigationPanelState } from "../common/hooks/use-navigation-panel-state";
 import { AppContext } from "../common/app-context";
 import { useContext, useState } from "react";
-import { CHATBOT_NAME } from "../common/constants";
+import { PLUGIN_ECISO_CHATBOT_NAME,CHATBOT_NAME } from "../common/constants";
 
 export default function NavigationPanel() {
   const appContext = useContext(AppContext);
   const onFollow = useOnFollow();
   const [navigationPanelState, setNavigationPanelState] =
     useNavigationPanelState();
+
   const [items] = useState<SideNavigationProps.Item[]>(() => {
+
     const items: SideNavigationProps.Item[] = [
       {
         type: "link",
@@ -41,6 +43,7 @@ export default function NavigationPanel() {
     console.log("NAV <rag_enabled>: ",appContext?.config.rag_enabled)
     console.log("NAV <eciso_enabed>: ",appContext?.config.custom_plugins)
     console.log("NAV <eciso_enabed>: ",appContext?.config.eciso_enabled)
+    console.log("NAV <eciso_enabed_focus>: ",appContext?.config.eciso_focus_enabled)
     if (appContext?.config.custom_plugins) {
 
       items.push(
@@ -101,6 +104,23 @@ export default function NavigationPanel() {
         external: true,
       }
     );
+
+    //cheap dirty code to build focus mode
+    if( appContext?.config.eciso_focus_enabled ){
+      items.length = 0;
+      items.push(
+        {
+          type: "link",
+          text: "Home",
+          href: "/",
+        },
+        {
+          type: "link",
+          text: PLUGIN_ECISO_CHATBOT_NAME,
+          href: "/plugins/eciso",
+        },
+      )
+    }
 
     return items;
   });

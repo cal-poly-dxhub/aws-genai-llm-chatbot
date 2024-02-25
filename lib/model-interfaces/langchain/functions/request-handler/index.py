@@ -181,7 +181,9 @@ def handle_run(record):
         # Set font
         pdf.set_font("Arial", size=12)
         # Add content to the PDF
-        pdf.multi_cell(0, 10, response["content"])
+        # pdf.multi_cell(0, 10, response["content"])
+        # markdown flag only support on fpdf2
+        pdf.multi_cell(0, 10, response["content"], markdown=True)
         # Save the PDF to a file
         pdf.output(temp_file_path)
 

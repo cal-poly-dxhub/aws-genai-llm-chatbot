@@ -38,13 +38,18 @@ function App() {
         <div style={{ height: "56px", backgroundColor: "#000716" }}>&nbsp;</div>
         <div>
           <Routes>
-            <Route index path="/" element={<Welcome />} />
+            { appContext?.config.eciso_focus_enabled ?<Route index path="/" element={<EcisoWelcome />} />  :
+              <Route index path="/" element={<Welcome />} />
+            }
+            { appContext?.config.eciso_focus_enabled ? <></> :
             <Route path="/chatbot" element={<Outlet />}>
               <Route path="playground" element={<Playground />} />
               <Route path="playground/:sessionId" element={<Playground />} />
               <Route path="multichat" element={<MultiChatPlayground />} />
               <Route path="models" element={<Models />} />
-            </Route>
+            </Route> 
+            }
+            { appContext?.config.eciso_focus_enabled ? <></> :
             <Route path="/rag" element={<Outlet />}>
               <Route path="" element={<Dashboard />} />
               <Route path="engines" element={<Engines />} />
@@ -57,14 +62,16 @@ function App() {
                 path="workspaces/:workspaceId"
                 element={<WorkspacePane />}
               />
+              
               <Route
                 path="workspaces/:workspaceId/rss/:feedId"
                 element={<RssFeed />}
               />
               <Route path="workspaces/add-data" element={<AddData />} />
             </Route>
+            }
             <Route path="/plugins" element={<Outlet />}>
-              <Route path="eciso-home" element={<EcisoWelcome/>} />
+              { !appContext?.config.eciso_focus_enabled ? <Route path="eciso-home" element={<EcisoWelcome/>} /> : <></> }
               <Route path="eciso" element={<Eciso/>} />
               <Route path="eciso/:sessionId" element={<Eciso />} />
             </Route>

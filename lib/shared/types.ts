@@ -78,6 +78,7 @@ export interface SystemConfig {
   privateWebsite?: boolean;
   customPlugins?: boolean;
   ecisoPlugin?: boolean;
+  ecisoPluginFocus?: boolean;
   bedrock?: {
     enabled?: boolean;
     region?: SupportedRegion;
