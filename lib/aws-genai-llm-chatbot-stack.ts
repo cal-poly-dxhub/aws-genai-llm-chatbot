@@ -50,6 +50,7 @@ export class AwsGenAILLMChatbotStack extends cdk.Stack {
       userPool: authentication.userPool,
       modelsParameter: models.modelsParameter,
       models: models.models,
+
     });
 
     // Langchain Interface Construct
@@ -71,6 +72,7 @@ export class AwsGenAILLMChatbotStack extends cdk.Stack {
           messagesTopic: chatBotApi.messagesTopic,
           sessionsTable: chatBotApi.sessionsTable,
           byUserIdIndex: chatBotApi.byUserIdIndex,
+          pluginEcisoBucket: chatBotApi.pluginEcisoBucket,
         }
       );
 

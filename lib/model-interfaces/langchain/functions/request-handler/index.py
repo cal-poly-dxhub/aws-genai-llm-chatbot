@@ -13,6 +13,11 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from genai_core.utils.websocket import send_to_client
 from genai_core.types import ChatbotAction
 
+from fpdf import FPDF
+import boto3
+import hashlib
+
+
 processor = BatchProcessor(event_type=EventType.SQS)
 tracer = Tracer()
 logger = Logger()
@@ -101,6 +106,16 @@ def extract_response(text):
     
     return ' '.join(response_contents)
 
+class PDFGenerator(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 12)
+        self.cell(0, 10, 'My PDF Document', 0, 1, 'C')
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, 'Page %s' % self.page_no(), 0, 0, 'C')
+
 
 def handle_run(record):
     user_id = record["userId"]
@@ -147,10 +162,41 @@ def handle_run(record):
         response["content"]=override
         #logger.info(response)
     
+    # eciso override for pdf generation
     if( provider == 'ecisopdf'):
+        s3_client = boto3.client('s3')
+        bucket_name=os.environ["PLUGIN_ECISO_BUCKET_NAME"]
+        
+        sha256 = hashlib.sha256()
+        sha256.update(response["content"].encode('utf-8'))
+        unique_hash = sha256.hexdigest()
+        
+        #tmp file pdf path
+        temp_file_path="/tmp/output.pdf"
+        temp_file_name="output"+unique_hash+".pdf"
+        # Create instance of FPDF class
+        pdf = PDFGenerator()
+        # Add a page
+        pdf.add_page()
+        # Set font
+        pdf.set_font("Arial", size=12)
+        # Add content to the PDF
+        pdf.multi_cell(0, 10, response["content"])
+        # Save the PDF to a file
+        pdf.output(temp_file_path)
+
+        # upload to s3
+        s3_client.upload_file(temp_file_path, bucket_name, temp_file_name)
+        # Clean up the temporary file
+        os.remove(temp_file_path)
+        # Generate a pre-signed URL for the uploaded file
+        s3_presigned_url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': bucket_name, 'Key': temp_file_name},
+            ExpiresIn=3600  # Set the expiration time (in seconds)
+        )
         #generate pdf and update last statement of response with presigned url
-        response["content"] += "\n\nDownload report here: <presigned link>"
-        pass
+        response["content"] += "\n\nDownload report here: " + s3_presigned_url
     
 
     send_to_client(

@@ -2,6 +2,7 @@ import genai_core.clients
 
 from langchain.llms import Bedrock
 from langchain.prompts.prompt import PromptTemplate
+from langchain.memory import ConversationBufferMemory
 
 from ..base import ModelAdapter
 from ..registry import registry
@@ -10,7 +11,6 @@ from ..registry import registry
 class EcisoAdapter(ModelAdapter):
     def __init__(self, model_id, *args, **kwargs):
         self.model_id = model_id
-
         super().__init__(*args, **kwargs)
 
     def get_llm(self, model_kwargs={}):
@@ -18,12 +18,25 @@ class EcisoAdapter(ModelAdapter):
 
         params = {}
         if "temperature" in model_kwargs:
-            params["temperature"] = model_kwargs["temperature"]
+            #override
+            #params["temperature"] = model_kwargs["temperature"]
+            params["temperature"] =  0
         if "topP" in model_kwargs:
-            params["top_p"] = model_kwargs["topP"]
+            #params["top_p"] = model_kwargs["topP"]
+            params["top_p"] = 0
         if "maxTokens" in model_kwargs:
-            params["max_tokens_to_sample"] = model_kwargs["maxTokens"]
+            #override
+            #params["max_tokens_to_sample"] = model_kwargs["maxTokens"]
+            params["max_tokens_to_sample"] =  512
 
+        '''
+        print("==============================")
+        print( "temp:",params["temperature"] )
+        print( "P:",params["top_p"] )
+        print( "max_tokens:",params["max_tokens_to_sample"] )
+        print(params)
+        print("==============================")
+        '''
         # probably can just update to streaming = false as we don't want UI to control this aspect.
         return Bedrock(
             client=bedrock,
@@ -31,10 +44,6 @@ class EcisoAdapter(ModelAdapter):
             model_kwargs=params,
             streaming=model_kwargs.get("streaming", False),
             callbacks=[self.callback_handler],
-        )
-
-        return PromptTemplate(
-            template=template, input_variables=["context", "question"]
         )
 
     def get_prompt(self):
@@ -64,7 +73,7 @@ Comprehensive Report: After gathering all insights, draft a report showcasing gr
 Response Format:
 
 You will split your response into Thought, Action, Observation and Response. Use this XML structure and keep everything strictly within these XML tags. Remember, the <Response> tag contains what's shown to the user. There should be no content outside these XML blocks:
-
+0
 <Thought> Your internal thought process. </Thought>
 <Action> Your actions or analyses. </Action>
 <Observation> User feedback or clarifications. </Observation>
@@ -75,7 +84,7 @@ Current conversation:
 
 <Observation> {input} </Observation>
 
-Assistant:"""
+Assistant: """
 
 
         input_variables = ["input", "chat_history"]
@@ -87,27 +96,15 @@ Assistant:"""
         prompt_template = PromptTemplate(**prompt_template_args)
 
         
-        #print(prompt_template)
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("~~~E CISO BASE ADAPTER TEMPLATE  ~~~~~~~~~")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print(prompt_template)
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         return prompt_template
 
-
-
-
-
-    def get_condense_question_prompt(self):
-        template = """
-{chat_history}
-
-Human: Given the above conversation and a follow up input, rephrase the follow up input to be a standalone question, in the same language as the follow up input.
-Follow Up Input: {question}
-
-Assistant:"""
-
-        return PromptTemplate(
-            input_variables=["chat_history", "question"],
-            chat_history="{chat_history}",
-            template=template,
-        )
 
 
 # Register the adapter

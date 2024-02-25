@@ -26,8 +26,8 @@ export default function Chat(props: { sessionId?: string }) {
       streaming: true,
       showMetadata: false,
       maxTokens: 512,
-      temperature: 0.6,
-      topP: 0.9,
+      temperature: 0.0,
+      topP: 0.0,
       files: null,
     })
   );

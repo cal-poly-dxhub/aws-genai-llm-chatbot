@@ -13,6 +13,7 @@ import { RagEngines } from "../../rag-engines";
 import { Shared } from "../../shared";
 import { SystemConfig } from "../../shared/types";
 import { NagSuppressions } from "cdk-nag";
+import * as s3 from "aws-cdk-lib/aws-s3";
 
 interface LangChainInterfaceProps {
   readonly shared: Shared;
@@ -21,6 +22,7 @@ interface LangChainInterfaceProps {
   readonly messagesTopic: sns.Topic;
   readonly sessionsTable: dynamodb.Table;
   readonly byUserIdIndex: string;
+  readonly pluginEcisoBucket: s3.Bucket;
 }
 
 export class LangChainInterface extends Construct {
@@ -30,6 +32,7 @@ export class LangChainInterface extends Construct {
   constructor(scope: Construct, id: string, props: LangChainInterfaceProps) {
     super(scope, id);
 
+    
     const requestHandler = new lambda.Function(this, "RequestHandler", {
       vpc: props.shared.vpc,
       code: props.shared.sharedCode.bundleWithLambdaAsset(
@@ -50,6 +53,7 @@ export class LangChainInterface extends Construct {
         SESSIONS_BY_USER_ID_INDEX_NAME: props.byUserIdIndex,
         API_KEYS_SECRETS_ARN: props.shared.apiKeysSecret.secretArn,
         MESSAGES_TOPIC_ARN: props.messagesTopic.topicArn,
+        PLUGIN_ECISO_BUCKET_NAME: props.pluginEcisoBucket?.bucketName ?? "",
         WORKSPACES_TABLE_NAME:
           props.ragEngines?.workspacesTable.tableName ?? "",
         WORKSPACES_BY_OBJECT_TYPE_INDEX_NAME:
@@ -132,6 +136,13 @@ export class LangChainInterface extends Construct {
           actions: ["sagemaker:InvokeEndpoint"],
           resources: [props.ragEngines.sageMakerRagModels.model.endpoint.ref],
         })
+      );
+    }
+
+    //eciso
+    if (props.pluginEcisoBucket) {
+      props.pluginEcisoBucket.grantReadWrite(
+        requestHandler
       );
     }
 

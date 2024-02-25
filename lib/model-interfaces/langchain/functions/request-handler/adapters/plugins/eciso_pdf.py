@@ -18,9 +18,12 @@ class EcisoPDFAdapter(ModelAdapter):
 
         params = {}
         if "temperature" in model_kwargs:
-            params["temperature"] = model_kwargs["temperature"]
+            #override
+            #params["temperature"] = model_kwargs["temperature"]
+            params["temperature"] =  .5
         if "topP" in model_kwargs:
-            params["top_p"] = model_kwargs["topP"]
+            #params["top_p"] = model_kwargs["topP"]
+            params["top_p"] = 0
         if "maxTokens" in model_kwargs:
             #override
             #params["max_tokens_to_sample"] = model_kwargs["maxTokens"]
@@ -100,6 +103,14 @@ Assistant:"""
         }
         prompt_template = PromptTemplate(**prompt_template_args)
 
+
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("~~~E CISO PDF ADAPTER TEMPLATE   ~~~~~~~~~")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print(prompt_template)
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         return prompt_template
 
 
