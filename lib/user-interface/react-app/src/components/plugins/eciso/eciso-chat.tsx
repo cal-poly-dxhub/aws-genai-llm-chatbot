@@ -4,17 +4,17 @@ import {
   ChatBotHistoryItem,
   ChatBotMessageType,
   FeedbackData,
-} from "./types";
+} from "../../chatbot/types";
 import { SpaceBetween, StatusIndicator } from "@cloudscape-design/components";
 import { v4 as uuidv4 } from "uuid";
-import { AppContext } from "../../common/app-context";
-import { ApiClient } from "../../common/api-client/api-client";
-import ChatMessage from "./chat-message";
-import ChatInputPanel, { ChatScrollState } from "./chat-input-panel";
-import styles from "../../styles/chat.module.scss";
-import { CHATBOT_NAME } from "../../common/constants";
+import { AppContext } from "../../../common/app-context";
+import { ApiClient } from "../../../common/api-client/api-client";
+import ChatMessage from "../../chatbot/chat-message";
+import EcisoChatInputPanel, { EcisoChatScrollState } from "./eciso-chat-input-panel";
+import styles from "../../../styles/chat.module.scss";
+import { PLUGIN_ECISO_CHATBOT_NAME,PLUGIN_ECISO_LOGO } from "../../../common/constants";
 
-export default function Chat(props: { sessionId?: string }) {
+export default function EcisoChat(props: { sessionId?: string }) {
   const appContext = useContext(AppContext);
   const [running, setRunning] = useState<boolean>(false);
   const [session, setSession] = useState<{ id: string; loading: boolean }>({
@@ -23,11 +23,11 @@ export default function Chat(props: { sessionId?: string }) {
   });
   const [configuration, setConfiguration] = useState<ChatBotConfiguration>(
     () => ({
-      streaming: true,
+      streaming: false,
       showMetadata: false,
       maxTokens: 512,
-      temperature: 0.0,
-      topP: 0.0,
+      temperature: 0,
+      topP: 0,
       files: null,
     })
   );
@@ -49,16 +49,16 @@ export default function Chat(props: { sessionId?: string }) {
       setSession({ id: props.sessionId, loading: true });
       const apiClient = new ApiClient(appContext);
       try {
-        const result = await apiClient.sessions.getSession(props.sessionId);
+        const result = await apiClient.sessions.GetEcisoSessionQuery(props.sessionId);
 
-        if (result.data?.getSession?.history) {
-          console.log(result.data.getSession);
-          ChatScrollState.skipNextHistoryUpdate = true;
-          ChatScrollState.skipNextScrollEvent = true;
-          console.log("History", result.data.getSession.history);
+        if (result.data?.getEcisoSession?.history) {
+          console.log(result.data.getEcisoSession);
+          EcisoChatScrollState.skipNextHistoryUpdate = true;
+          EcisoChatScrollState.skipNextScrollEvent = true;
+          console.log("History", result.data.getEcisoSession.history);
           setMessageHistory(
             result
-              .data!.getSession!.history.filter((x) => x !== null)
+              .data!.getEcisoSession!.history.filter((x) => x !== null)
               .map((x) => ({
                 type: x!.type as ChatBotMessageType,
                 metadata: JSON.parse(x!.metadata!),
@@ -119,7 +119,12 @@ export default function Chat(props: { sessionId?: string }) {
       </SpaceBetween>
       <div className={styles.welcome_text}>
         {messageHistory.length == 0 && !session?.loading && (
-          <center>{CHATBOT_NAME}</center>
+          <center>
+            {PLUGIN_ECISO_CHATBOT_NAME}
+            <br/>
+                <img src={PLUGIN_ECISO_LOGO} alt="Cal Poly" />
+          </center>
+
         )}
         {session?.loading && (
           <center>
@@ -128,7 +133,9 @@ export default function Chat(props: { sessionId?: string }) {
         )}
       </div>
       <div className={styles.input_container}>
-        <ChatInputPanel
+
+
+        <EcisoChatInputPanel
           session={session}
           running={running}
           setRunning={setRunning}

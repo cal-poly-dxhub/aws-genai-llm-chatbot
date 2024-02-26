@@ -341,6 +341,7 @@ type Query {
   calculateEmbeddings(input: CalculateEmbeddingsInput!): [Embedding]!
     @aws_cognito_user_pools
   getSession(id: String!): Session @aws_cognito_user_pools
+  getEcisoSession(id: String!): Session @aws_cognito_user_pools
   listKendraIndexes: [KendraIndex!]! @aws_cognito_user_pools
   isKendraDataSynching(workspaceId: String!): Boolean @aws_cognito_user_pools
   listDocuments(input: ListDocumentsInput!): DocumentsResult!

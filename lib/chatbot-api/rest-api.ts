@@ -24,6 +24,7 @@ export interface ApiResolversProps {
   readonly sessionsTable: dynamodb.Table;
   readonly byUserIdIndex: string;
   readonly userFeedbackBucket: s3.Bucket;
+  readonly pluginEcisoBucket: s3.Bucket;
   readonly modelsParameter: ssm.StringParameter;
   readonly models: SageMakerModelEndpoint[];
   readonly api: appsync.GraphqlApi;

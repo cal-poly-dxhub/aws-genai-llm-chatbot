@@ -28,7 +28,7 @@ export default function AppConfigured() {
         const result = await fetch("/aws-exports.json");
         const awsExports = await result.json();
         const currentConfig = Amplify.configure(awsExports) as AppConfig | null;
-
+        
         if (currentConfig?.config.auth_federated_provider?.auto_redirect) {
           let authenticated = false;
           try {

@@ -328,10 +328,14 @@ export function getSelectedModelMetadata(
 ): Model | null {
   let selectedModelMetadata: Model | null = null;
 
+  console.log("~~~selectedModelOption~~~");
+  console.log(selectedModelOption);
+
   if (selectedModelOption) {
     const { name, provider } = OptionsHelper.parseValue(
       selectedModelOption.value
     );
+    
     const targetModel = models?.find(
       (m) => m.name === name && m.provider === provider
     );
@@ -340,6 +344,7 @@ export function getSelectedModelMetadata(
       selectedModelMetadata = targetModel;
     }
   }
-
+  console.log("~~~~selectedModelMetaData~~~~~");
+  console.log(selectedModelMetadata)
   return selectedModelMetadata;
 }
