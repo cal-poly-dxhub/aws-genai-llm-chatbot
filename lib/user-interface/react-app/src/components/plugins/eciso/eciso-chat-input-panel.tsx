@@ -622,49 +622,51 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
                   }}
                 />
               ))}
-              <Button
-              disabled={
-                readyState !== ReadyState.OPEN ||
-                !state.models?.length ||
-                !state.selectedModel ||
-                props.running ||
-                props.session.loading ||
-                props.messageHistory.length === 0
-              }
-              onClick={handlePdfMessage}
-              variant="primary"
-            >
-              {props.running ? (
-                <>
-                  Generate Report&nbsp;&nbsp;
-                </>
-              ) : (
-                "Generate Report"
-              )}
-            </Button>
-            <Button
-              disabled={
-                readyState !== ReadyState.OPEN ||
-                !state.models?.length ||
-                !state.selectedModel ||
-                props.running ||
-                state.value.trim().length === 0 ||
-                props.session.loading
-              }
-              onClick={handleSendMessage}
-              iconAlign="right"
-              iconName={!props.running ? "angle-right-double" : undefined}
-              variant="primary"
-            >
-              {props.running ? (
-                <>
-                  Loading&nbsp;&nbsp;
-                  <Spinner />
-                </>
-              ) : (
-                "Send"
-              )}
-            </Button>
+              <SpaceBetween direction="horizontal" size="xl">
+                  <Button
+                  disabled={
+                    readyState !== ReadyState.OPEN ||
+                    !state.models?.length ||
+                    !state.selectedModel ||
+                    props.running ||
+                    props.session.loading ||
+                    props.messageHistory.length === 0
+                  }
+                  onClick={handlePdfMessage}
+                  variant="primary"
+                >
+                  {props.running ? (
+                    <>
+                      Generate Report&nbsp;&nbsp;
+                    </>
+                  ) : (
+                    "Generate Report"
+                  )}
+                </Button>
+                <Button
+                  disabled={
+                    readyState !== ReadyState.OPEN ||
+                    !state.models?.length ||
+                    !state.selectedModel ||
+                    props.running ||
+                    state.value.trim().length === 0 ||
+                    props.session.loading
+                  }
+                  onClick={handleSendMessage}
+                  iconAlign="right"
+                  iconName={!props.running ? "angle-right-double" : undefined}
+                  variant="primary"
+                >
+                  {props.running ? (
+                    <>
+                      Loading&nbsp;&nbsp;
+                      <Spinner />
+                    </>
+                  ) : (
+                    "Send"
+                  )}
+                </Button>
+            </SpaceBetween>
           </div>
         </div>
       </Container>
