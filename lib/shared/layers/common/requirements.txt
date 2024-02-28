@@ -17,3 +17,6 @@ attrs==23.1.0
 feedparser==6.0.10
 defusedxml==0.7.1
 fpdf2==2.7.8
+importlib-metadata==7.0.1
+Markdown==3.5.2
+zipp==3.17.0
