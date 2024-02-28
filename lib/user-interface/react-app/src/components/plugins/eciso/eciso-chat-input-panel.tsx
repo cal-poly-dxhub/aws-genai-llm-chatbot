@@ -510,18 +510,27 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
   }[readyState];
 
   //const modelsOptions = OptionsHelper.getSelectOptionGroups(state.models || []);
-  const modelsOptions = [
-    {
-        "label": "Eciso",
-        "options": [
-            {
-                "label": "anthropic.claude-v2",
-                "value": "eciso::anthropic.claude-v2"
-            }]
-    }
-  ]
-  console.log("~~~~~Options~~~~~")
-  console.log(modelsOptions)
+  const getEcisoCustomModelOptions = (models: { provider: string; name: string }[]): { label: string; options: { label: string; value: string }[] }[] => {
+      // can add in sanity check here to make sure anthropic is available.
+      if( models.length > 0 ){
+        return [
+          {
+              "label": "Eciso",
+              "options": [
+                  {
+                      "label": "anthropic.claude-v2",
+                      "value": "eciso::anthropic.claude-v2"
+                  }]
+          }
+        ];
+      }
+      else {
+        return [];
+      }
+    
+  }
+  const modelsOptions = getEcisoCustomModelOptions( (state.models || []) )
+
   const workspaceOptions = [
     ...workspaceDefaultOptions,
     ...OptionsHelper.getSelectOptions(state.workspaces || []),
@@ -619,7 +628,8 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
                 !state.models?.length ||
                 !state.selectedModel ||
                 props.running ||
-                props.session.loading
+                props.session.loading ||
+                props.messageHistory.length === 0
               }
               onClick={handlePdfMessage}
               variant="primary"
