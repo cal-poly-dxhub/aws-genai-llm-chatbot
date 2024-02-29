@@ -14,6 +14,7 @@ from genai_core.utils.websocket import send_to_client
 from genai_core.types import ChatbotAction
 
 from fpdf import FPDF
+import markdown
 import boto3
 import hashlib
 
@@ -109,7 +110,7 @@ def extract_response(text):
 class PDFGenerator(FPDF):
     def header(self):
         self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, 'My PDF Document', 0, 1, 'C')
+        self.cell(0, 10, 'My eCISO Report', 0, 1, 'C')
 
     def footer(self):
         self.set_y(-15)
@@ -179,12 +180,14 @@ def handle_run(record):
         # Add a page
         pdf.add_page()
         # Set font
-        pdf.set_font("Arial", size=12)
+        #pdf.set_font("Arial", size=12)
         # Add content to the PDF
         # pdf.multi_cell(0, 10, response["content"])
         # markdown flag only support on fpdf2
-        pdf.multi_cell(0, 10, response["content"], markdown=True)
+        #pdf.multi_cell(0, 10, response["content"])
         # Save the PDF to a file
+        html_output = markdown.markdown(response["content"])
+        pdf.write_html(html_output)
         pdf.output(temp_file_path)
 
         # upload to s3

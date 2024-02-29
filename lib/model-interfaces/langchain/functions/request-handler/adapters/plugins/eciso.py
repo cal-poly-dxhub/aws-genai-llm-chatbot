@@ -3,6 +3,8 @@ import genai_core.clients
 from langchain.llms import Bedrock
 from langchain.prompts.prompt import PromptTemplate
 from langchain.memory import ConversationBufferMemory
+from langchain.schema import AIMessage, HumanMessage
+
 
 from ..base import ModelAdapter
 from ..registry import registry
@@ -29,14 +31,7 @@ class EcisoAdapter(ModelAdapter):
             #params["max_tokens_to_sample"] = model_kwargs["maxTokens"]
             params["max_tokens_to_sample"] =  512
 
-        '''
-        print("==============================")
-        print( "temp:",params["temperature"] )
-        print( "P:",params["top_p"] )
-        print( "max_tokens:",params["max_tokens_to_sample"] )
-        print(params)
-        print("==============================")
-        '''
+
         # probably can just update to streaming = false as we don't want UI to control this aspect.
         return Bedrock(
             client=bedrock,
@@ -48,8 +43,7 @@ class EcisoAdapter(ModelAdapter):
 
     def get_prompt(self):
         template = """
-
-You are eCISO, a digital cybersecurity assistant specialized in version 1.1 of the NIST Cybersecurity Framework. Your primary mission is to interactively engage with a user, representing an institution, and evaluate their cybersecurity measures according to the NIST framework's five functions: Identify, Protect, Detect, Respond, and Recover.
+Human: You are eCISO, a digital cybersecurity assistant specialized in version 1.1 of the NIST Cybersecurity Framework. Your primary mission is to interactively engage with a user, representing an institution, and evaluate their cybersecurity measures according to the NIST framework's five functions: Identify, Protect, Detect, Respond, and Recover.
 
 Strategy:
 
@@ -73,7 +67,7 @@ Comprehensive Report: After gathering all insights, draft a report showcasing gr
 Response Format:
 
 You will split your response into Thought, Action, Observation and Response. Use this XML structure and keep everything strictly within these XML tags. Remember, the <Response> tag contains what's shown to the user. There should be no content outside these XML blocks:
-0
+
 <Thought> Your internal thought process. </Thought>
 <Action> Your actions or analyses. </Action>
 <Observation> User feedback or clarifications. </Observation>
@@ -82,9 +76,9 @@ You will split your response into Thought, Action, Observation and Response. Use
 Current conversation:
 {chat_history}
 
-<Observation> {input} </Observation>
+Human: {input} 
 
-Assistant: """
+Assistant:"""
 
 
         input_variables = ["input", "chat_history"]
@@ -96,15 +90,66 @@ Assistant: """
         prompt_template = PromptTemplate(**prompt_template_args)
 
         
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print("~~~E CISO BASE ADAPTER TEMPLATE  ~~~~~~~~~")
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print(prompt_template)
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         return prompt_template
 
+    def get_memory(self, output_key=None, return_messages=False):
+        return EcisoConversationBufferMemory(
+            memory_key="chat_history",
+            chat_memory=self.chat_history,
+            return_messages=return_messages,
+            output_key=output_key,
+        )
+
+class EcisoConversationBufferMemory(ConversationBufferMemory):
+    @property
+    def buffer_as_str(self) -> str:
+        return self.get_buffer_string()
+
+    def get_buffer_string(self) -> str:
+        """modified version of https://github.com/langchain-ai/langchain/blob/bed06a4f4ab802bedb3533021da920c05a736810/libs/langchain/langchain/schema/messages.py#L14"""
+        human_message_cnt = 0
+        string_messages = []
+        for m in self.chat_memory.messages:
+            if isinstance(m, HumanMessage):
+                if human_message_cnt == 0:
+                    message = f"{m.content}"
+                else:
+                    message = f"Human: {m.content}"
+                human_message_cnt += 1
+            elif isinstance(m, AIMessage):
+                message = f"Assistant: {self.extract_response(m.content)}"
+            else:
+                raise ValueError(f"Got unsupported message type: {m}")
+            string_messages.append(message)
+
+        return "".join(string_messages)
+    def extract_response(self,text):
+        # Extract content between <Response> and </Response> tags   
+        response_contents = []
+        start_idx = text.find("<Response>")
+        while start_idx != -1:
+            end_idx = text.find("</Response>", start_idx)
+            if end_idx == -1:
+                break
+            response_contents.append(text[start_idx + 10 : end_idx])
+            start_idx = text.find("<Response>", end_idx)
+
+        # Extract content not enclosed in any XML tags only if no <Response> content found
+        if not response_contents:
+            outside_xml_content = []
+            prev_end_idx = 0
+            while prev_end_idx < len(text):
+                start_idx = text.find("<", prev_end_idx)
+                if start_idx == -1:
+                    outside_xml_content.append(text[prev_end_idx:].strip())
+                    break
+                elif start_idx > prev_end_idx:
+                    outside_xml_content.append(text[prev_end_idx:start_idx].strip())
+                end_idx = text.find(">", start_idx)
+                prev_end_idx = end_idx + 1
+            response_contents = outside_xml_content
+        
+        return ' '.join(response_contents)
 
 
 # Register the adapter

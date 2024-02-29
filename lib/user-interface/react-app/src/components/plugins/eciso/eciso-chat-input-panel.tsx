@@ -510,18 +510,27 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
   }[readyState];
 
   //const modelsOptions = OptionsHelper.getSelectOptionGroups(state.models || []);
-  const modelsOptions = [
-    {
-        "label": "Eciso",
-        "options": [
-            {
-                "label": "anthropic.claude-v2",
-                "value": "eciso::anthropic.claude-v2"
-            }]
-    }
-  ]
-  console.log("~~~~~Options~~~~~")
-  console.log(modelsOptions)
+  const getEcisoCustomModelOptions = (models: { provider: string; name: string }[]): { label: string; options: { label: string; value: string }[] }[] => {
+      // can add in sanity check here to make sure anthropic is available.
+      if( models.length > 0 ){
+        return [
+          {
+              "label": "Eciso",
+              "options": [
+                  {
+                      "label": "anthropic.claude-v2",
+                      "value": "eciso::anthropic.claude-v2"
+                  }]
+          }
+        ];
+      }
+      else {
+        return [];
+      }
+    
+  }
+  const modelsOptions = getEcisoCustomModelOptions( (state.models || []) )
+
   const workspaceOptions = [
     ...workspaceDefaultOptions,
     ...OptionsHelper.getSelectOptions(state.workspaces || []),
@@ -613,48 +622,51 @@ export default function EcisoChatInputPanel(props: EcisoChatInputPanelProps) {
                   }}
                 />
               ))}
-              <Button
-              disabled={
-                readyState !== ReadyState.OPEN ||
-                !state.models?.length ||
-                !state.selectedModel ||
-                props.running ||
-                props.session.loading
-              }
-              onClick={handlePdfMessage}
-              variant="primary"
-            >
-              {props.running ? (
-                <>
-                  Generate Report&nbsp;&nbsp;
-                </>
-              ) : (
-                "Generate Report"
-              )}
-            </Button>
-            <Button
-              disabled={
-                readyState !== ReadyState.OPEN ||
-                !state.models?.length ||
-                !state.selectedModel ||
-                props.running ||
-                state.value.trim().length === 0 ||
-                props.session.loading
-              }
-              onClick={handleSendMessage}
-              iconAlign="right"
-              iconName={!props.running ? "angle-right-double" : undefined}
-              variant="primary"
-            >
-              {props.running ? (
-                <>
-                  Loading&nbsp;&nbsp;
-                  <Spinner />
-                </>
-              ) : (
-                "Send"
-              )}
-            </Button>
+              <SpaceBetween direction="horizontal" size="xl">
+                  <Button
+                  disabled={
+                    readyState !== ReadyState.OPEN ||
+                    !state.models?.length ||
+                    !state.selectedModel ||
+                    props.running ||
+                    props.session.loading ||
+                    props.messageHistory.length === 0
+                  }
+                  onClick={handlePdfMessage}
+                  variant="primary"
+                >
+                  {props.running ? (
+                    <>
+                      Generate Report&nbsp;&nbsp;
+                    </>
+                  ) : (
+                    "Generate Report"
+                  )}
+                </Button>
+                <Button
+                  disabled={
+                    readyState !== ReadyState.OPEN ||
+                    !state.models?.length ||
+                    !state.selectedModel ||
+                    props.running ||
+                    state.value.trim().length === 0 ||
+                    props.session.loading
+                  }
+                  onClick={handleSendMessage}
+                  iconAlign="right"
+                  iconName={!props.running ? "angle-right-double" : undefined}
+                  variant="primary"
+                >
+                  {props.running ? (
+                    <>
+                      Loading&nbsp;&nbsp;
+                      <Spinner />
+                    </>
+                  ) : (
+                    "Send"
+                  )}
+                </Button>
+            </SpaceBetween>
           </div>
         </div>
       </Container>
