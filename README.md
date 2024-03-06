@@ -1,3 +1,55 @@
+# E-Ciso Refactor
+Original proof of concept refactored into broader framework.
+
+Follows same deployment steps as [![Original Framework](https://aws-samples.github.io/aws-genai-llm-chatbot/guide/deploy.html)
+
+```
+(eciso) $ npm run config
+
+> aws-genai-llm-chatbot@3.1.3 config
+> node ./cli/magic.js config
+
+✔ Prefix to differentiate this deployment · eciso
+✔ Do you want to deploy a private website? I.e only accessible in VPC (y/N) · false
+✔ Do you have access to Bedrock and want to enable it (Y/n) · true
+✔ Region where Bedrock is available · us-east-1
+✔ Cross account role arn to invoke Bedrock - leave empty if Bedrock is in same account · 
+✔ Do you want to enable additional custom plugins?  (Y/n) · true
+✔ Do you want to enable the eCISO plugin? (Y/n) · true
+✔ Do you want to enable the focus mode for eCISO plugin? (Y/n) · true
+✔ Do you want to use any Sagemaker Models (y/N) · false
+✔ Do you want to enable RAG (y/N) · false
+```
+
+Config has been updated to support eCISO "Plugin". eCISO plugin true adds the module under a menu drop down of Custom Plugins; focus mode rolls away everything else from the core framework and makes eCISO related items only piece showing to user.
+
+## High level changes to note/areas of interest
+
+| File | Comment |
+| magic-config.ts | Updated prompt options |
+| lib/chatbot-api/chatbot-s3-buckets/index.ts | additional s3 bucket to support PDF |
+| lib/chatbot-api/functions/api-handler/routes/sessions.py | appsync additional routes |
+| lib/model-interfaces/langchain/functions/request-handler/adapters/* | Custom adapter enhancements for eCISO |
+| lib/user-interface/* | UI related tweaks | 
+
+General thoughts:
+* POC level implementation, so will need further development for production systems
+* Needs increased error handling
+* PDF Generation should be ASYNC not SYNC
+* Likely would want to limit available adapters (not just via ui)
+* Retro testing of baseline functionality outside of the following options was not performed
+```
+✔ Prefix to differentiate this deployment · eciso
+✔ Do you want to deploy a private website? I.e only accessible in VPC (y/N) · false
+✔ Do you have access to Bedrock and want to enable it (Y/n) · true
+✔ Region where Bedrock is available · us-east-1
+✔ Cross account role arn to invoke Bedrock - leave empty if Bedrock is in same account · 
+✔ Do you want to use any Sagemaker Models (y/N) · false
+✔ Do you want to enable RAG (y/N) · false
+```
+(IE private website etc.)
+
+
 # Deploying a Multi-Model and Multi-RAG Powered Chatbot Using AWS CDK on AWS
 
 [![Release Notes](https://img.shields.io/github/v/release/aws-samples/aws-genai-llm-chatbot)](https://github.com/aws-samples/aws-genai-llm-chatbot/releases)
