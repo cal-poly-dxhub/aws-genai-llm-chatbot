@@ -26,6 +26,7 @@ Config has been updated to support eCISO "Plugin". eCISO plugin true adds the mo
 ## High level changes to note/areas of interest
 
 | File | Comment |
+|--------- | ------------ |
 | magic-config.ts | Updated prompt options |
 | lib/chatbot-api/chatbot-s3-buckets/index.ts | additional s3 bucket to support PDF |
 | lib/chatbot-api/functions/api-handler/routes/sessions.py | appsync additional routes |
