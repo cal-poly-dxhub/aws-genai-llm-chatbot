@@ -1,7 +1,7 @@
 # E-Ciso Refactor
 Original proof of concept refactored into broader framework.
 
-Follows same deployment steps as [![Original Framework](https://aws-samples.github.io/aws-genai-llm-chatbot/guide/deploy.html)
+Follows same deployment steps as [Original Framework](https://aws-samples.github.io/aws-genai-llm-chatbot/guide/deploy.html)
 
 ```
 (eciso) $ npm run config
